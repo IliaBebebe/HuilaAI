@@ -11,7 +11,8 @@
 1. Установите зависимости: `npm install`
 2. Создайте `.env` (см. `env.example`) и задайте:
    - `DATABASE_URL="file:./dev.db"`
-   - `DEEPSEEK_API_KEY="ваш_ключ"`
+   - `OPENROUTER_API_KEY="ваш_ключ"`
+   - `OPENROUTER_MODEL="deepseek/deepseek-chat"` (или любая модель OpenRouter)
    - `ADMIN_PASSWORD="секретный_пароль"`
 3. Примените миграции: `npx prisma migrate dev`
 4. Запустите dev-сервер: `npm run dev`
@@ -44,7 +45,8 @@ npm start
    Start Command: `npm start`
 3. Задайте переменные окружения:
    - `DATABASE_URL=file:/var/data/dev.db` (или URL Postgres). Добавьте Persistent Disk `/var/data`, чтобы SQLite переживал рестарты.
-   - `DEEPSEEK_API_KEY=<ваш ключ>`
+   - `OPENROUTER_API_KEY=<ваш ключ>`
+   - `OPENROUTER_MODEL=<модель>`
    - `ADMIN_PASSWORD=<секрет>`
 4. Нажмите **Deploy**. При каждом push в `main` Render будет собирать новую версию автоматически.
 

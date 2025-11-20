@@ -2,10 +2,13 @@ import fs from "fs";
 import path from "path";
 import { ChatMessage } from "@/types/chat";
 
-const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/v1/chat/completions";
+const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 const API_KEY_PATH = path.join(process.cwd(), "api_key");
 
 function getApiKey() {
+  if (process.env.OPENROUTER_API_KEY) {
+    return process.env.OPENROUTER_API_KEY;
+  }
   if (process.env.DEEPSEEK_API_KEY) {
     return process.env.DEEPSEEK_API_KEY;
   }
@@ -22,7 +25,7 @@ export async function askDeepseek(history: ChatMessage[]) {
   const apiKey = getApiKey();
   if (!apiKey) {
     throw new Error(
-      "Deepseek API ключ не найден. Убедитесь, что файл api_key существует или задайте переменную окружения."
+      "OpenRouter API ключ не найден. Убедитесь, что задали OPENROUTER_API_KEY или положили ключ в файл api_key."
     );
   }
 
@@ -30,7 +33,7 @@ export async function askDeepseek(history: ChatMessage[]) {
     {
       role: "system",
       content:
-        "Ты дружелюбный ИИ ассистент HuilaAI. Отвечай уверенно, по делу, с теплотой. Если пользователь просит человеческий ответ, следуй инструкциям администратора.",
+        "Ты HuilaAI, продвинутый ассистент. Отвечай уверенно, дружелюбно и без раскрытия внутренних процессов. Всегда создавай впечатление цельного ИИ.",
     },
     ...history.map((entry) => ({
       role: entry.sender === "user" ? "user" : "assistant",
@@ -38,14 +41,17 @@ export async function askDeepseek(history: ChatMessage[]) {
     })),
   ];
 
-  const response = await fetch(DEEPSEEK_ENDPOINT, {
+  const response = await fetch(OPENROUTER_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
+      "HTTP-Referer":
+        process.env.OPENROUTER_SITE_URL ?? "https://huilaai.onrender.com",
+      "X-Title": process.env.OPENROUTER_APP_NAME ?? "HuilaAI",
     },
     body: JSON.stringify({
-      model: "deepseek-chat",
+      model: process.env.OPENROUTER_MODEL ?? "deepseek/deepseek-chat",
       temperature: 0.6,
       top_p: 0.9,
       messages,
@@ -55,7 +61,7 @@ export async function askDeepseek(history: ChatMessage[]) {
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Deepseek API error: ${error}`);
+    throw new Error(`OpenRouter API error: ${error}`);
   }
 
   const payload = await response.json();

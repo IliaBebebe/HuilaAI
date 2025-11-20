@@ -143,16 +143,12 @@ export default function Experience() {
       <GradientBackdrop />
       <main className="relative z-10 flex flex-col items-center px-4 py-10 md:py-16">
         <header className="w-full max-w-5xl mb-10 flex flex-col gap-4 text-center">
-          <p className="text-sm uppercase tracking-[0.4em] text-accentMuted">
-            Личный эксперимент
-          </p>
           <h1 className="text-4xl md:text-6xl font-semibold tracking-tight">
             HuilaAI
           </h1>
           <p className="text-base md:text-lg text-gray-300 leading-relaxed">
-            Свободный агрегатор нейросетей без рекламы и регистрации. Просто
-            назовите себя и начните диалог с ИИ — в любой момент админ может
-            незаметно перехватить общение в ручном режиме.
+            Современный ИИ-чат без регистрации и рекламы. Просто назовите себя и
+            начинайте беседу.
           </p>
         </header>
 
@@ -172,10 +168,10 @@ export default function Experience() {
                 setPrompt={setPrompt}
                 sendPrompt={sendPrompt}
                 isSending={isSending}
-                status={status}
                 name={session?.name ?? ""}
-                waitingManual={waitingManual}
-                manualMode={manualMode}
+                isPendingReply={
+                  status === "typing" || status === "manual" || waitingManual
+                }
                 error={error}
                 clearError={() => setError(null)}
               />
@@ -255,10 +251,8 @@ interface ChatSurfaceProps {
   setPrompt(next: string): void;
   sendPrompt(): Promise<void>;
   isSending: boolean;
-  status: "idle" | "typing" | "manual";
   name: string;
-  waitingManual: boolean;
-  manualMode: boolean;
+  isPendingReply: boolean;
   error: string | null;
   clearError(): void;
 }
@@ -269,10 +263,8 @@ const ChatSurface = ({
   setPrompt,
   sendPrompt,
   isSending,
-  status,
   name,
-  waitingManual,
-  manualMode,
+  isPendingReply,
   error,
   clearError,
 }: ChatSurfaceProps) => {
@@ -298,7 +290,6 @@ const ChatSurface = ({
           </p>
           <p className="text-xl font-semibold mt-1">{name}</p>
         </div>
-        <StatusBadge manualMode={manualMode} waitingManual={waitingManual} />
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
@@ -315,12 +306,7 @@ const ChatSurface = ({
             </motion.div>
           ))}
         </AnimatePresence>
-        {status === "typing" && (
-          <TypingState label="ИИ печатает ответ..." variant="ai" />
-        )}
-        {(status === "manual" || waitingManual) && (
-          <TypingState label="Ответ готовит человек-оператор..." variant="manual" />
-        )}
+        {isPendingReply && <TypingState label="ИИ печатает ответ..." />}
         <div ref={scrollAnchorRef} />
       </div>
 
@@ -359,31 +345,6 @@ const ChatSurface = ({
   );
 };
 
-const StatusBadge = ({
-  manualMode,
-  waitingManual,
-}: {
-  manualMode: boolean;
-  waitingManual: boolean;
-}) => {
-  const label = waitingManual
-    ? "Ручной ответ"
-    : manualMode
-    ? "Ручной режим"
-    : "Авто режим";
-  const color = waitingManual
-    ? "bg-warning/20 text-warning"
-    : manualMode
-    ? "bg-accent/20 text-accent"
-    : "bg-white/10 text-gray-300";
-
-  return (
-    <span className={`px-4 py-2 rounded-full text-sm font-medium ${color}`}>
-      {label}
-    </span>
-  );
-};
-
 const MessageBubble = ({ message }: { message: ChatMessage }) => {
   const isUser = message.sender === "user";
   return (
@@ -403,19 +364,9 @@ const MessageBubble = ({ message }: { message: ChatMessage }) => {
   );
 };
 
-const TypingState = ({
-  label,
-  variant,
-}: {
-  label: string;
-  variant: "ai" | "manual";
-}) => (
+const TypingState = ({ label }: { label: string }) => (
   <div className="flex items-center gap-3 text-sm text-gray-400">
-    <div
-      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-        variant === "manual" ? "bg-warning/30" : "bg-accent/30"
-      }`}
-    >
+    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-accent/30">
       <span className="w-2 h-2 rounded-full bg-white/80 animate-pulse" />
     </div>
     <p>{label}</p>
