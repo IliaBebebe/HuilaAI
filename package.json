@@ -1,0 +1,37 @@
+{
+  "name": "huilaai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "HuilaAI — экспериментальный агрегатор ИИ-чатов с админкой",
+  "dependencies": {
+    "@prisma/client": "^5.19.1",
+    "framer-motion": "^12.23.24",
+    "next": "^15.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "swr": "^2.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.7",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.0.3",
+    "postcss": "^8.4.47",
+    "prettier": "^3.3.3",
+    "prisma": "^5.19.1",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3"
+  }
+}
